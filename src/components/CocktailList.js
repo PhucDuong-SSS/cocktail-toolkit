@@ -33,10 +33,15 @@ function CocktailList() {
   if (loading) {
     return (
       <div className="spinner-grow" role="status">
-        <span className="visually-hidden"> loading ...</span>
+        <span className="visually-hidden">Loading...</span>
       </div>
     );
   }
+
+  if (!cocktails) {
+    return <h2>No Cocktails matched your search criteria</h2>;
+  }
+
   return (
     <div className="container">
       <div className="row row-cols-1 row-cols-md-3 g-4">
