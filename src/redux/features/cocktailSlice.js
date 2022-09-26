@@ -1,4 +1,4 @@
-import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
+import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 
 export const fetchCocktails = createAsyncThunk(
   "cocktails/fetchCocktails",
@@ -18,15 +18,23 @@ export const fetchSingleCocktail = createAsyncThunk(
   }
 );
 
-const initialState = {
-  cocktails: [],
-  cocktail: [],
-  loading: false,
-  error: null,
-};
+export const fetchSearchCocktail = createAsyncThunk(
+  "cocktails/fetchSearchCocktail",
+  async ({ searchText }) => {
+    return fetch(
+      `https://www.thecocktaildb.com/api/json/v1/1/search.php?s=${searchText}`
+    ).then((res) => res.json());
+  }
+);
+
 const cocktailSlice = createSlice({
   name: "cocktails",
-  initialState,
+  initialState: {
+    cocktails: [],
+    cocktail: [],
+    loading: false,
+    error: null,
+  },
   extraReducers: {
     [fetchCocktails.pending]: (state, action) => {
       state.loading = true;
@@ -47,6 +55,17 @@ const cocktailSlice = createSlice({
       state.cocktail = action.payload.drinks;
     },
     [fetchSingleCocktail.rejected]: (state, action) => {
+      state.loading = false;
+      state.error = action.payload;
+    },
+    [fetchSearchCocktail.pending]: (state, action) => {
+      state.loading = true;
+    },
+    [fetchSearchCocktail.fulfilled]: (state, action) => {
+      state.loading = false;
+      state.cocktails = action.payload.drinks;
+    },
+    [fetchSearchCocktail.rejected]: (state, action) => {
       state.loading = false;
       state.error = action.payload;
     },
